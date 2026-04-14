@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule a Birthday Surprise</title>
+    <!-- Modern typography from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Flatpickr Datepicker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --primary-hover: #ff4c4c;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --success: #10b981;
+            --error: #f43f5e;
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: rgba(31, 38, 135, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Animated gradient background */
+            background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            padding: 20px;
+            color: var(--text-main);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .form-container {
+            /* Glassmorphism effect */
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 16px 40px var(--glass-shadow);
+            width: 100%;
+            max-width: 480px;
+            animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 32px;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .emoji {
+            display: inline-block;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        }
+
+        .input-group:nth-child(1) { animation-delay: 0.1s; }
+        .input-group:nth-child(2) { animation-delay: 0.2s; }
+        .input-group:nth-child(3) { animation-delay: 0.3s; }
+        .input-group:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 15px;
+            transition: color 0.3s ease;
+        }
+
+        input[type="text"], input[type="datetime-local"], input[type="tel"] {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 14px;
+            font-size: 16px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            font-weight: 500;
+        }
+
+        input[type="text"]:focus, input[type="datetime-local"]:focus, input[type="tel"]:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #a1c4fd;
+            box-shadow: 0 0 0 4px rgba(161, 196, 253, 0.3);
+            transform: translateY(-2px);
+        }
+
+        input[type="text"]::placeholder, input[type="tel"]::placeholder {
+            color: #a1a1aa;
+            font-weight: 400;
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .calendar-icon {
+            position: absolute;
+            right: 16px;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .input-icon-wrapper:focus-within .calendar-icon {
+            color: var(--primary);
+        }
+
+        input#sendDate, input#bdayMobile {
+            padding-right: 48px;
+        }
+
+        /* Custom Drag & Drop file input */
+        .file-upload-wrapper {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            border: 2px dashed rgba(161, 196, 253, 1);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .file-upload-wrapper:hover {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #ff9a9e;
+        }
+
+        .file-upload-wrapper.dragover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .file-upload-wrapper:hover .file-upload-icon {
+            transform: translateY(-5px);
+        }
+
+        .file-upload-text {
+            font-size: 15px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .file-upload-subtext {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .file-name-display {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            min-height: 20px;
+            color: var(--success);
+            transition: all 0.3s ease;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: var(--text-main);
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 154, 158, 0.6);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(255, 154, 158, 0.4);
+        }
+
+        /* Shine effect on button */
+        button[type="submit"]::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(30deg);
+            transition: all 0.8s ease;
+            opacity: 0;
+        }
+
+        button[type="submit"]:hover::after {
+            opacity: 1;
+            left: 100%;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-6px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Custom Flatpickr styling for Glassmorphism */
+        .flatpickr-calendar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 16px 40px rgba(31, 38, 135, 0.2) !important;
+            padding: 10px !important;
+            font-family: 'Outfit', sans-serif !important;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, .flatpickr-day.endRange.nextMonthDay {
+            background: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+        .flatpickr-day:hover {
+            background: rgba(255, 107, 107, 0.2) !important;
+            border-color: transparent !important;
+            color: var(--text-main) !important;
+        }
+        .flatpickr-time input:hover, .flatpickr-time .flatpickr-am-pm:hover, .flatpickr-time input:focus, .flatpickr-time .flatpickr-am-pm:focus {
+            background: rgba(255, 107, 107, 0.1) !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            color: var(--text-main) !important;
+            fill: var(--text-main) !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            font-weight: 600 !important;
+        }
+        .flatpickr-weekdays .flatpickr-weekday {
+            color: var(--primary) !important;
+            font-weight: 700 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Schedule Surprise <span class="emoji">✨</span></h2>
+    <form id="birthdayForm">
+        <div class="input-group">
+            <label for="bdayName">Recipient's Name</label>
+            <input type="text" id="bdayName" required placeholder="Who is the lucky person?">
+        </div>
+
+        <div class="input-group">
+            <label>Upload Photos (Min 9)</label>
+            <div class="file-upload-wrapper" id="dropZone">
+                <input type="file" id="bdayPhotos" accept="image/*" multiple required>
+                <div class="file-upload-icon">📸</div>
+                <div class="file-upload-text">Choose files or drag & drop</div>
+                <div class="file-upload-subtext">Upload at least 9 cherished moments</div>
+            </div>
+            <div class="file-name-display" id="fileNameDisplay"></div>
+        </div>
+
+        <div class="input-group">
+            <label for="bdayMobile">Recipient's WhatsApp Number</label>
+            <div class="input-icon-wrapper">
+                <input type="tel" id="bdayMobile" required placeholder="e.g., +1234567890">
+                <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="sendDate">Schedule Date & Time</label>
+            <div class="input-icon-wrapper">
+                <input type="text" id="sendDate" required placeholder="Select date and time...">
+                <svg class="calendar-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <button type="submit">Prepare Surprise 🚀</button>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('birthdayForm');
+        const bdayPhotos = document.getElementById('bdayPhotos');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const dropZone = document.getElementById('dropZone');
+
+        // Initialize Flatpickr for a beautiful custom date/time picker
+        flatpickr("#sendDate", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: "today",
+            time_24hr: false,
+            disableMobile: "true", // Ensures the custom picker shows even on mobile instead of native OS picker
+        });
+
+        // Update file count display
+        bdayPhotos.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                fileNameDisplay.textContent = `${files.length} photo(s) ready to go!`;
+                fileNameDisplay.style.color = files.length >= 9 ? 'var(--success)' : 'var(--error)';
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        });
+
+        // Drag and drop effects
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('dragover');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            bdayPhotos.files = files;
+            
+            // Trigger change event to update text
+            const event = new Event('change');
+            bdayPhotos.dispatchEvent(event);
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('bdayName').value;
+            const mobile = document.getElementById('bdayMobile').value;
+            const photos = document.getElementById('bdayPhotos').files;
+            const sendDate = document.getElementById('sendDate').value;
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            if (photos.length < 9) {
+                // Shake animation for error
+                dropZone.classList.add('shake');
+                fileNameDisplay.textContent = `You need 9 photos, but only have ${photos.length}!`;
+                fileNameDisplay.style.color = 'var(--error)';
+                setTimeout(() => dropZone.classList.remove('shake'), 400);
+                return;
+            }
+
+            // Convert uploaded files to save locally for the demo
+            submitBtn.textContent = 'Preparing Magic...';
+            submitBtn.style.opacity = '0.8';
+            submitBtn.style.pointerEvents = 'none';
+            document.body.style.cursor = 'wait';
+
+            try {
+                // Convert all files to base64 Data URLs so we can store them in sessionStorage
+                Promise.all(Array.from(photos).map(file => {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = e => resolve(e.target.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                })).then(base64Photos => {
+                    
+                    const surpriseData = {
+                        name: name,
+                        mobile: mobile,
+                        scheduledDate: sendDate,
+                        photos: base64Photos
+                    };
+                    
+                    fetch('http://localhost:3000/api/schedule', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(surpriseData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            submitBtn.textContent = 'Server Loaded & Scheduled! 🎉';
+                            submitBtn.style.background = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)';
+                            document.body.style.cursor = 'default';
+                            
+                            setTimeout(() => {
+                                // Redirect to the specifically generated template URL to preview
+                                window.location.href = `template.html?id=${data.surpriseId}`;
+                            }, 1000);
+                        } else {
+                            throw new Error(data.error);
+                        }
+                    })
+                    .catch(err => {
+                        alert("Error contacting the server! Make sure to run 'node server.js' first.");
+                        console.error(err);
+                        document.body.style.cursor = 'default';
+                        submitBtn.textContent = 'Prepare Surprise 🚀';
+                        submitBtn.style.opacity = '1';
+                        submitBtn.style.pointerEvents = 'auto';
+                    });
+
+                }).catch(err => {
+                    alert("Oh no, some files were too large to process! Try smaller images.");
+                    document.body.style.cursor = 'default';
+                    submitBtn.textContent = 'Prepare Surprise 🚀';
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.pointerEvents = 'auto';
+                });
+                
+            } catch(e) {
+                console.error(e);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
