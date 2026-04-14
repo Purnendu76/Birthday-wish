@@ -22,6 +22,7 @@ app.use(express.static(__dirname));
 const client = new Client({
     authStrategy: new LocalAuth(), // Saves session so you don't rescan QR every time
     puppeteer: {
+        headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
