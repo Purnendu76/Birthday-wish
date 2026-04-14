@@ -20,7 +20,10 @@ app.use(express.static(__dirname));
 
 // Initialize WhatsApp Web Client
 const client = new Client({
-    authStrategy: new LocalAuth() // Saves session so you don't rescan QR every time
+    authStrategy: new LocalAuth(), // Saves session so you don't rescan QR every time
+    puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
 });
 
 let isWhatsAppReady = false;
@@ -67,8 +70,9 @@ app.post('/api/schedule', (req, res) => {
     // Schedule the WhatsApp Message
     const sendTime = new Date(scheduledDate);
     
-    // Generate the unique link for the recipient
-    const surpriseLink = `http://localhost:${port}/template.html?id=${surpriseId}`;
+    // Generate the unique link for the recipient (auto-detects local vs production URL)
+    const hostUrl = req.headers.origin || `http://localhost:${port}`;
+    const surpriseLink = `${hostUrl}/template.html?id=${surpriseId}`;
     
     const messageText = `Happy Birthday ${name}! 🎉 I've prepared a special surprise for you.\n\nOpen this link to see your gift: ${surpriseLink}`;
     
