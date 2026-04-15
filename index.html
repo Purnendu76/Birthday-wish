@@ -480,14 +480,19 @@
                         photos: base64Photos
                     };
                     
-                    fetch('http://localhost:3000/api/schedule', {
+                    fetch('/api/schedule', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(surpriseData)
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(text => { throw new Error(text || `Server responded with ${response.status}`) });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
                             submitBtn.textContent = 'Server Loaded & Scheduled! 🎉';
@@ -495,7 +500,6 @@
                             document.body.style.cursor = 'default';
                             
                             setTimeout(() => {
-                                // Redirect to the specifically generated template URL to preview
                                 window.location.href = `template.html?id=${data.surpriseId}`;
                             }, 1000);
                         } else {
@@ -503,7 +507,7 @@
                         }
                     })
                     .catch(err => {
-                        alert("Error contacting the server! Make sure to run 'node server.js' first.");
+                        alert(`Surprise Failed: ${err.message}`);
                         console.error(err);
                         document.body.style.cursor = 'default';
                         submitBtn.textContent = 'Prepare Surprise 🚀';
