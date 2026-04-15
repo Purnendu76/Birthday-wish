@@ -41,7 +41,12 @@ client.on('ready', () => {
     console.log('✅ WhatsApp Client is READY! Messages will be sent automatically.');
 });
 
-client.initialize();
+client.initialize().catch(err => {
+    console.error('❌ Failed to initialize WhatsApp client:', err.message);
+    if (process.env.PUPPETEER_CACHE_DIR) {
+        console.log('🔍 Puppeteer is configured to look in:', process.env.PUPPETEER_CACHE_DIR);
+    }
+});
 
 // Database initialization
 const dbPath = path.join(__dirname, 'db.json');
