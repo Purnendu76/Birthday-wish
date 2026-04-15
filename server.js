@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -56,6 +56,7 @@ function saveDb() {
 
 // Endpoint to create a surprise
 app.post('/api/schedule', (req, res) => {
+    console.log(`📩 Received a new surprise request for: ${req.body.name}`);
     const { name, mobile, scheduledDate, photos } = req.body;
     
     if (!name || !mobile || !scheduledDate || !photos) {
